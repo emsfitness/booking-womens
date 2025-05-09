@@ -174,7 +174,7 @@
     apiKey: "AIzaSyC5bC6jK6AxkPYe8jQukFf-UiZt717aWAY",
     authDomain: "ems-fitness-booking-women-s.firebaseapp.com",
     projectId: "ems-fitness-booking-women-s",
-    storageBucket: "ems-fitness-booking-women-s.firebasestorage.app",
+    storageBucket: "ems-fitness-booking-women-s.appspot.com",
     messagingSenderId: "195013724853",
     appId: "1:195013724853:web:fc942f5aa8ab2343764cfc",
     measurementId: "G-1CV8KTH60N"
@@ -422,7 +422,8 @@
         let cancelBtn = '';
 
         if (bookedBy) {
-          content = bookedBy;
+          // التعديل هنا: عرض "محجوز" بدلاً من اسم المستخدم للمستخدمين العاديين
+          content = (currentUser?.role === 'admin' || bookedBy === currentUser?.name) ? bookedBy : 'محجوز';
           className = 'booked';
           if (currentUser?.role === 'admin') {
             cancelBtn = `<button class="cancel-btn" onclick="cancelBooking('${time}')">إلغاء الحجز</button>`;
