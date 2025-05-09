@@ -181,6 +181,11 @@
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
 
+    if (!username || !password) {
+      alert('يرجى إدخال اسم المستخدم وكلمة المرور');
+      return;
+    }
+
     if (username === adminUsername && password === adminPassword) {
       currentUser = {role: 'admin'};
       document.getElementById('login').classList.add('hidden');
@@ -193,6 +198,12 @@
       const userData = snapshot.val();
 
       if (!userData) {
+        // Check if username already exists
+        if (Object.keys(users).some(u => u.toLowerCase() === username.toLowerCase())) {
+          alert('اسم المستخدم موجود مسبقاً، يرجى اختيار اسم آخر');
+          return;
+        }
+        
         // New user registration
         const newUser = {
           password: password,
