@@ -128,6 +128,33 @@
     .approved-user {
       color: #4CAF50;
     }
+    .admin-tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .admin-tab {
+      padding: 10px 20px;
+      background-color: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .admin-tab:hover {
+      background-color: #444;
+    }
+    .admin-tab.active {
+      background-color: #f00;
+    }
+    .admin-content {
+      display: none;
+    }
+    .admin-content.active {
+      display: block;
+    }
   </style>
 </head>
 <body>
@@ -141,15 +168,35 @@
 
 <div id="admin" class="hidden">
   <h1>لوحة الأدمن</h1>
-  <h2>طلبات التسجيل:</h2>
-  <div id="pending"></div>
-  <h2>قائمة المتدربين:</h2>
-  <div id="approved"></div>
-  <h2>جدول الجلسات:</h2>
-  <div id="reports"></div>
-  <h2>التقارير الشهرية:</h2>
-  <div id="monthly"></div>
-  <button onclick="clearBookings()">مسح كل الحجوزات</button>
+  
+  <div class="admin-tabs">
+    <button class="admin-tab active" onclick="showTab('pending-tab')">طلبات التسجيل</button>
+    <button class="admin-tab" onclick="showTab('approved-tab')">قائمة المتدربين</button>
+    <button class="admin-tab" onclick="showTab('schedule-tab')">جدول الجلسات</button>
+    <button class="admin-tab" onclick="showTab('reports-tab')">التقارير الشهرية</button>
+    <button class="admin-tab" onclick="clearBookings()">مسح كل الحجوزات</button>
+  </div>
+  
+  <div id="pending-tab" class="admin-content active">
+    <h2>طلبات التسجيل:</h2>
+    <div id="pending"></div>
+  </div>
+  
+  <div id="approved-tab" class="admin-content">
+    <h2>قائمة المتدربين:</h2>
+    <div id="approved"></div>
+  </div>
+  
+  <div id="schedule-tab" class="admin-content">
+    <h2>جدول الجلسات:</h2>
+    <div id="reports"></div>
+  </div>
+  
+  <div id="reports-tab" class="admin-content">
+    <h2>التقارير الشهرية:</h2>
+    <div id="monthly"></div>
+  </div>
+  
   <button onclick="logout()">خروج</button>
 </div>
 
@@ -291,6 +338,24 @@
     document.getElementById('password').value = '';
   }
 
+  function showTab(tabId) {
+    // Hide all tabs
+    document.querySelectorAll('.admin-content').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    
+    // Deactivate all tab buttons
+    document.querySelectorAll('.admin-tab').forEach(btn => {
+      btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabId).classList.add('active');
+    
+    // Activate clicked button
+    event.target.classList.add('active');
+  }
+
   function renderAdmin() {
     // Pending Approvals
     const pending = Object.keys(users).filter(u => !users[u].approved);
@@ -340,17 +405,17 @@
                 <option value="single" ${users[u].type === 'single' ? 'selected' : ''}>سنجل</option>
                 <option value="double" ${users[u].type === 'double' ? 'selected' : ''}>دوبل</option>
               </select>
-            </td>
-            <td class="session-count">${users[u].sessions || 0}</td>
-            <td>${new Date(users[u].registrationDate).toLocaleDateString('ar-EG')}</td>
-            <td class="action-btns">
-              <button onclick="resetSessions('${u}')" class="action-btn">تصفير الجلسات</button>
-              <button onclick="deleteUser('${u}')" class="action-btn delete-btn">حذف</button>
-            </td>
-          </tr>
-        `).join('')}
-      </table>` : 
-      "<p>لا يوجد متدربين مسجلين.</p>";
+              </td>
+              <td class="session-count">${users[u].sessions || 0}</td>
+              <td>${new Date(users[u].registrationDate).toLocaleDateString('ar-EG')}</td>
+              <td class="action-btns">
+                <button onclick="resetSessions('${u}')" class="action-btn">تصفير الجلسات</button>
+                <button onclick="deleteUser('${u}')" class="action-btn delete-btn">حذف</button>
+              </td>
+            </tr>
+          `).join('')}
+        </table>` : 
+        "<p>لا يوجد متدربين مسجلين.</p>";
 
     renderReportTable('reports', bookings, false, true);
     renderMonthlyReport();
